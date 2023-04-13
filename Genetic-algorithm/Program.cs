@@ -21,15 +21,17 @@ namespace Genetic_algorithm
             {
                 array = new int[32];
                 Create_Individ();
+                value = Value_Finding(array);
             }
             public int[] array;
-
+            public Random random = new Random();
+            public double value;
             public void Create_Individ() // Заносим в массив занчения
             {
-                Random random = new Random();
+                //Random random = new Random();
                 for (int i = 0; i< array.Length; i++)
                 {
-                    array[i] = random.Next(10);
+                    array[i] = random.Next(2);
                 }
             }
 
@@ -39,23 +41,23 @@ namespace Genetic_algorithm
                 {
                     Console.Write(array[i]);
                 }
-                Console.Write("\n");
+                Console.Write(" Ценнсть гена: " + value + "\n");
             }
         }
-
 
         class Population
         {
             public Population(int N, int x) // Конструктор создания популяции
             {
-
+                this.N = N;
                 Indidvid[] ind = Create_Population(N);
                 this.x = x;
                 Console.WriteLine("lol! А это только " + x + "-ая популяция, смотри что будет дальше:");
                 Copulation(ind);
             }
-
+            public Indidvid[] ind;
             public int x; // Номер популяции
+            public int N; // Количесвто осыбей
 
             public Indidvid[] Create_Population(int N) // Создаём популяция
             {
@@ -103,12 +105,13 @@ namespace Genetic_algorithm
                     {
                         Create_Child2(s1,s2);
                     }
-
+                    value = Value_Finding(array);
                 }
 
-                int[] array = new int[32];
+                public int[] array = new int[32];
                 public int[] perent1;
                 public int[] perent2;
+                public double value;
 
                 public void Create_Child1(int s1, int s2) // Заполняем массивчик
                 {
@@ -124,7 +127,9 @@ namespace Genetic_algorithm
                     {
                         array[i] = perent1[i];
                     }
+                    
                 }
+
                 public void Create_Child2(int s1, int s2) // Заполняем массивчик
                 {
                     for (int i = 0; i < s1; i++)
@@ -146,12 +151,26 @@ namespace Genetic_algorithm
                     {
                         Console.Write(array[i]);
                     }
-                    Console.WriteLine();
+                    Console.Write(" Ценнсть гена: " + value + "\n");
                 }
             }
 
         }
-
+        static double Value_Finding(int[] array)
+        {
+            double X = 0;
+            for (int i = array.Length / 2; i > 0; i--)
+            {
+                X += array[i] * i;
+            }
+            double Y = 0;
+            for (int i = array.Length - 1; i > array.Length / 2; i--)
+            {
+                Y += array[i] * -(i - array.Length);
+            }
+            double value = Math.Pow(1.5 - X + X * Y, 2) + Math.Pow(2.25 - X + X * Y * Y, 2) + Math.Pow(2.625 - X + X * Y * Y * Y, 2);
+            return value;
+        }
 
 
         static void Main(string[] args)
