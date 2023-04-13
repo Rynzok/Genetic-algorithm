@@ -24,12 +24,11 @@ namespace Genetic_algorithm
             }
 
             public int[] array;
-            public Random random = new Random();
             public double value;
 
             public void Create_Individ() // Заносим в массив занчения
             {
-                //Random random = new Random();
+                Random random = new Random();
                 for (int i = 0; i< array.Length; i++)
                 {
                     array[i] = random.Next(2);
@@ -37,7 +36,7 @@ namespace Genetic_algorithm
                 value = Value_Finding(array);
             }
 
-            public void Reproduction(int[] perent1, int[] perent2, int s1, int s2, bool shit)
+            public void Reproduction(int[] perent1, int[] perent2, int s1, int s2, bool shit) // Осуществяем кроссигновер от родителей
             {
                 if (shit)
                 {
@@ -69,8 +68,18 @@ namespace Genetic_algorithm
                         array[i] = perent2[i];
                     }
                 }
+                Random random = new Random();
+                int Pm = random.Next(100);
+                if (Pm < 8)
+                {
+                    int Gen1 = random.Next(0,17);
+                    int Gen2 = random.Next(17,32);
+                    int t = array[Gen1];
+                    array[Gen1] = array[Gen2];
+                    array[Gen2] = t;
+                }
                 value = Value_Finding(array);
-            }
+            } 
         }
 
         class Population
@@ -138,18 +147,30 @@ namespace Genetic_algorithm
         static double Value_Finding(int[] array)
         {
             double X = 0;
-            for (int i = array.Length / 2; i > 0; i--)
+            for (int i = array.Length / 16; i > 0; i--)
             {
-                X += array[i] * i;
+                X += array[i] * Math.Pow(2,-(i - array.Length / 16));
             }
+            double X_point = 0;
+            for (int i = array.Length / 2; i > array.Length / 16; i--)
+            {
+                X_point += array[i] * Math.Pow(2, -(i - array.Length / 2));
+            }
+            X += X_point/Math.Pow(10, X_point.ToString().Length);
             double Y = 0;
-            for (int i = array.Length - 1; i > array.Length / 2; i--)
+            for (int i = array.Length / 16 * 9; i > array.Length / 2; i--)
             {
-                Y += array[i] * -(i - array.Length);
+                Y += array[i] * Math.Pow(2, -(i - array.Length / 16 * 9));
             }
+            double Y_point = 0;
+            for (int i = array.Length - 1; i > array.Length / 16 * 9; i--)
+            {
+                Y_point += array[i] * Math.Pow(2, -(i - array.Length + 1));
+            }
+            Y += Y_point / Math.Pow(10, Y_point.ToString().Length);
             double value = Math.Pow(1.5 - X + X * Y, 2) + Math.Pow(2.25 - X + X * Y * Y, 2) + Math.Pow(2.625 - X + X * Y * Y * Y, 2);
             return value;
-        }
+        } //Расчёт ценности гена
 
 
         static void Main(string[] args)
