@@ -20,12 +20,13 @@ namespace Genetic_algorithm
             public Indidvid() // Конструктор единичной осыби популяции
             {
                 array = new int[32];
-                Create_Individ();
-                value = Value_Finding(array);
+                
             }
+
             public int[] array;
             public Random random = new Random();
             public double value;
+
             public void Create_Individ() // Заносим в массив занчения
             {
                 //Random random = new Random();
@@ -33,15 +34,42 @@ namespace Genetic_algorithm
                 {
                     array[i] = random.Next(2);
                 }
+                value = Value_Finding(array);
             }
 
-            public void Print() // Выводим занчения в консоль
+            public void Reproduction(int[] perent1, int[] perent2, int s1, int s2, bool shit)
             {
-                for (byte i = 0; i < array.Length; i++)
+                if (shit)
                 {
-                    Console.Write(array[i]);
+                    for (int i = 0; i < s1; i++)
+                    {
+                        array[i] = perent1[i];
+                    }
+                    for (int i = s1; i < s2; i++)
+                    {
+                        array[i] = perent2[i];
+                    }
+                    for (int i = s2; i < perent1.Length; i++)
+                    {
+                        array[i] = perent1[i];
+                    }
                 }
-                Console.Write(" Ценнсть гена: " + value + "\n");
+                else
+                {
+                    for (int i = 0; i < s1; i++)
+                    {
+                        array[i] = perent2[i];
+                    }
+                    for (int i = s1; i < s2; i++)
+                    {
+                        array[i] = perent1[i];
+                    }
+                    for (int i = s2; i < perent1.Length; i++)
+                    {
+                        array[i] = perent2[i];
+                    }
+                }
+                value = Value_Finding(array);
             }
         }
 
@@ -55,6 +83,7 @@ namespace Genetic_algorithm
                 Console.WriteLine("lol! А это только " + x + "-ая популяция, смотри что будет дальше:");
                 Copulation(ind);
             }
+
             public Indidvid[] ind;
             public int x; // Номер популяции
             public int N; // Количесвто осыбей
@@ -65,7 +94,8 @@ namespace Genetic_algorithm
                 for (int i = 0; i < N; i++)
                 {
                     ind[i] = new Indidvid();
-                    ind[i].Print();
+                    ind[i].Create_Individ();
+                    Print(ind[i].array, ind[i].value);
                 }
                 return ind;
             }
@@ -73,7 +103,7 @@ namespace Genetic_algorithm
             public void Copulation(Indidvid[] ind) // Метод совокупления
             {
                 Random random = new Random();
-                Child[] children = new Child[ind.Length]; // Массив из объектов типа ребёнок
+                Indidvid[] children = new Indidvid[ind.Length]; // Массив из объектов типа ребёнок
                 for (int i = 0; i < ind.Length;i += 2)
                 {
                     int s1 = random.Next(1, ind.Length / 2); // 1 точка для кроссинговера
@@ -82,80 +112,29 @@ namespace Genetic_algorithm
                     //int s2 = 23;
 
 
-                    children[i] = new Child(ind[i], ind[i+1], s1 , s2, true); // Создаём детей
-                    children[i+1] = new Child(ind[i], ind[i + 1], s1, s2, false);
+                    children[i] = new Indidvid(); // Создаём детей
+                    children[i+1] = new Indidvid();
+                    children[i].Reproduction(ind[i].array, ind[i + 1].array, s1, s2, true);
+                    children[i+1].Reproduction(ind[i].array, ind[i + 1].array, s1, s2, false);
                 }
                 for(int i = 0; i < children.Length; i++)
                 {
-                    children[i].Print(); // Печатем детей
-                }
-            }
-
-            class Child
-            {
-                public Child(Indidvid perent1, Indidvid perent2, int s1, int s2, bool shit) 
-                {
-                    this.perent1 = perent1.array;
-                    this.perent2 = perent2.array;
-                    if (shit)
-                    {
-                        Create_Child1(s1,s2); // Это 1 ребёнок или второй?
-                    }
-                    else
-                    {
-                        Create_Child2(s1,s2);
-                    }
-                    value = Value_Finding(array);
+                    Print(children[i].array, children[i].value); // Печатем детей
                 }
 
-                public int[] array = new int[32];
-                public int[] perent1;
-                public int[] perent2;
-                public double value;
-
-                public void Create_Child1(int s1, int s2) // Заполняем массивчик
-                {
-                    for (int i = 0; i < s1; i++)
-                    {
-                        array[i] = perent1[i];
-                    }
-                    for (int i = s1; i < s2; i++)
-                    {
-                        array[i] = perent2[i];
-                    }
-                    for (int i = s2; i < perent1.Length; i++)
-                    {
-                        array[i] = perent1[i];
-                    }
-                    
-                }
-
-                public void Create_Child2(int s1, int s2) // Заполняем массивчик
-                {
-                    for (int i = 0; i < s1; i++)
-                    {
-                        array[i] = perent2[i];
-                    }
-                    for (int i = s1; i < s2; i++)
-                    {
-                        array[i] = perent1[i];
-                    }
-                    for (int i = s2; i < perent1.Length; i++)
-                    {
-                        array[i] = perent2[i];
-                    }
-                }
-                public void Print() // Метод вывода новых генов в консоль
-                {
-                    for (byte i = 0; i < array.Length; i++)
-                    {
-                        Console.Write(array[i]);
-                    }
-                    Console.Write(" Ценнсть гена: " + value + "\n");
-                }
             }
 
         }
+
+        static void Print(int[] array, double value) // Метод вывода новых генов в консоль
+        {
+            for (byte i = 0; i < array.Length; i++)
+            {
+                Console.Write(array[i]);
+            }
+            Console.Write(" Ценнсть гена: " + value + "\n");
+        }
+
         static double Value_Finding(int[] array)
         {
             double X = 0;
