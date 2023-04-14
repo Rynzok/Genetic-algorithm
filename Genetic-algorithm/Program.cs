@@ -96,6 +96,7 @@ namespace Genetic_algorithm
                 Console.WriteLine("Исходная популяция");
                 ind = Create_Population(N);
                 this.x = x;
+                min_value = 1000;
                 
                 //Copulation(ind);
             }
@@ -104,6 +105,7 @@ namespace Genetic_algorithm
             public int x; // Номер популяции
             public int N; // Количесвто осыбей
             public Random random = new Random(); // Генератор случайных чисел
+            public double min_value;
 
             public Indidvid[] Create_Population(int N) // Создаём популяция
             {
@@ -161,6 +163,7 @@ namespace Genetic_algorithm
                 {
                     Print(ind[i].array, ind[i].value); // Печатем детей
                 }
+                this.min_value = GetValue(ind);
             }
 
             public int Selection(double[] roulette_fields) // Выбераем родителей
@@ -187,6 +190,19 @@ namespace Genetic_algorithm
                 }
             }
 
+            public double GetValue(Indidvid[] ind)
+            {
+
+                for (int i = 0; i < N; i++)
+                {
+                    if(min_value < ind[i].value)
+                    {
+                        min_value = ind[i].value;
+                    }
+                }
+                return min_value;
+            }
+
         }
 
         static double Sum(Indidvid[] ind) 
@@ -197,7 +213,7 @@ namespace Genetic_algorithm
                 sum += 1 / ind[i].value;
             }
             return sum;
-        }
+        }  // Обратная сумма
 
         static void Print(int[] array, double value) // Метод вывода новых генов в консоль
         {
@@ -241,7 +257,7 @@ namespace Genetic_algorithm
         {
             int N = Convert.ToInt32(Console.ReadLine());
             Population population = new Population(N,0);
-            for (int i = 0; i < 10; i++)
+            while( population.min_value != 0)
             {
                 population.Copulation(population.ind);
             }
