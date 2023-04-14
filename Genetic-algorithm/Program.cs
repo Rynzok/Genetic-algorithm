@@ -93,9 +93,10 @@ namespace Genetic_algorithm
             public Population(int N, int x) // Конструктор создания популяции
             {
                 this.N = N;
+                Console.WriteLine("Исходная популяция");
                 ind = Create_Population(N);
                 this.x = x;
-                Console.WriteLine("lol! А это только " + x + "-ая популяция, смотри что будет дальше:");
+                
                 //Copulation(ind);
             }
 
@@ -125,7 +126,7 @@ namespace Genetic_algorithm
 
                 for (int i = 0; i < roulette_fields.Length - 1; i++) // Заполняем массив
                 {
-                    roulette_fields[i + 1] = roulette_fields[i] + ind[i].value / sum_value;
+                    roulette_fields[i + 1] = roulette_fields[i] + (1 / ind[i].value )/ sum_value;
                 }
                 int x1;
                 int x2;
@@ -147,17 +148,19 @@ namespace Genetic_algorithm
                     {
                         x1 = Selection(roulette_fields);
                         x2 = Selection(roulette_fields);
-                    } while (x1 < x2); // Выбираем им родителей
+                    } while (x1 == x2); // Выбираем им родителей
 
                     children[i].Reproduction(ind[x1].array, ind[x2].array, s1, s2, true);
                     children[i+1].Reproduction(ind[x1].array, ind[x2].array, s1, s2, false);
 
                 }
-                for(int i = 0; i < children.Length; i++)
+                this.x++;
+                Overwriting(children);
+                Console.WriteLine("lol! А это только " + x + "-ое потомство, смотри что будет дальше:");
+                for (int i = 0; i < N; i++)
                 {
-                    Print(children[i].array, children[i].value); // Печатем детей
+                    Print(ind[i].array, ind[i].value); // Печатем детей
                 }
-
             }
 
             public int Selection(double[] roulette_fields) // Выбераем родителей
@@ -167,13 +170,21 @@ namespace Genetic_algorithm
                 double m = random.NextDouble(); // Крутим колесо рулетки)
                 for (int i = 0; i < roulette_fields.Length - 1; i++) // проходим по всем полям значений рулетки
                 {
-                    if (roulette_fields[i] < m & m < roulette_fields[i+1]) // Ищем
+                    if (roulette_fields[i] < m && m < roulette_fields[i+1]) // Ищем
                     {
                         x = i;
-                        //break;
+                        break;
                     }
                 }
                 return x;
+            }
+
+            public void Overwriting(Indidvid[] children)
+            {
+                for (int i = 0; i < N; i++)
+                {
+                    ind[i] = children[i];
+                }
             }
 
         }
@@ -183,7 +194,7 @@ namespace Genetic_algorithm
             double sum = 0;
             for (int i = 0; i < ind.Length * 0.6; i++) // Сумма фитнесс-функций 60% наиболееприспособленных осыбей
             {
-                sum += ind[i].value;
+                sum += 1 / ind[i].value;
             }
             return sum;
         }
@@ -229,9 +240,12 @@ namespace Genetic_algorithm
         static void Main(string[] args)
         {
             int N = Convert.ToInt32(Console.ReadLine());
-            Population population = new Population(N,1);
-            population.Copulation(population.ind);
-            
+            Population population = new Population(N,0);
+            for (int i = 0; i < 10; i++)
+            {
+                population.Copulation(population.ind);
+            }
+
         }
     }
 }
