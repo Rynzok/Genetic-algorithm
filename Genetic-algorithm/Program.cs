@@ -93,10 +93,10 @@ namespace Genetic_algorithm
             public Population(int N, int x) // Конструктор создания популяции
             {
                 this.N = N;
-                Indidvid[] ind = Create_Population(N);
+                ind = Create_Population(N);
                 this.x = x;
                 Console.WriteLine("lol! А это только " + x + "-ая популяция, смотри что будет дальше:");
-                Copulation(ind);
+                //Copulation(ind);
             }
 
             public Indidvid[] ind;
@@ -118,11 +118,11 @@ namespace Genetic_algorithm
 
             public void Copulation(Indidvid[] ind) // Метод совокупления
             {
-                Indidvid[] children = new Indidvid[ind.Length]; // Массив из объектов типа ребёнок
+                Indidvid[] children = new Indidvid[N]; // Массив из объектов типа ребёнок
                 for (int i = 0; i < ind.Length;i += 2)
                 {
-                    int s1 = random.Next(1, ind.Length / 2); // 1 точка для кроссинговера
-                    int s2 = random.Next(ind.Length / 2, ind.Length); // 2 точка для кроссинговера
+                    int s1 = random.Next(1, 32 / 2); // 1 точка для кроссинговера
+                    int s2 = random.Next(32 / 2, 32); // 2 точка для кроссинговера
                     //int s1 = 5;
                     //int s2 = 23;
 
@@ -131,10 +131,12 @@ namespace Genetic_algorithm
                     children[i+1] = new Indidvid(random);
                     children[i].Reproduction(ind[i].array, ind[i + 1].array, s1, s2, true);
                     children[i+1].Reproduction(ind[i].array, ind[i + 1].array, s1, s2, false);
+                    ind[i] = children[i];
+                    ind[i+1] = children[i+1];
                 }
                 for(int i = 0; i < children.Length; i++)
                 {
-                    Print(children[i].array, children[i].value); // Печатем детей
+                    Print(ind[i].array, ind[i].value); // Печатем детей
                 }
 
             }
@@ -183,6 +185,7 @@ namespace Genetic_algorithm
         {
             int N = Convert.ToInt32(Console.ReadLine());
             Population population = new Population(N,1);
+            population.Copulation(population.ind);
             
         }
     }
