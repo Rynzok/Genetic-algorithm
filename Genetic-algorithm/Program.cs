@@ -68,18 +68,23 @@ namespace Genetic_algorithm
                         array[i] = perent2[i];
                     }
                 }
+                Mutation(array);
+                value = Value_Finding(array);
+            }
+
+            public void Mutation(int[] array) // Осуществление мутации
+            {
                 Random random = new Random();
                 int Pm = random.Next(100);
                 if (Pm < 8)
                 {
-                    int Gen1 = random.Next(0,17);
-                    int Gen2 = random.Next(17,32);
+                    int Gen1 = random.Next(0, 17);
+                    int Gen2 = random.Next(17, 32);
                     int t = array[Gen1];
                     array[Gen1] = array[Gen2];
                     array[Gen2] = t;
                 }
-                value = Value_Finding(array);
-            } 
+            }
         }
 
         class Population
