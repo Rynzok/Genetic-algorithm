@@ -118,29 +118,74 @@ namespace Genetic_algorithm
 
             public void Copulation(Indidvid[] ind) // Метод совокупления
             {
-                Indidvid[] children = new Indidvid[N]; // Массив из объектов типа ребёнок
+                Array.Sort(ind, (x, y) => x.value.CompareTo(y.value)); // Сортируем массив по значения фитнесс-функции
+                double sum_value = Sum(ind);
+                double[] roulette_fields = new double[((int)(ind.Length * 0.6 + 1))]; // Создаём массив для нашей рулетки
+                roulette_fields[0] = 0;
+
+                for (int i = 0; i < roulette_fields.Length - 1; i++) // Заполняем массив
+                {
+                    roulette_fields[i + 1] = roulette_fields[i] + ind[i].value / sum_value;
+                }
+                int x1;
+                int x2;
+
+                Indidvid[] children = new Indidvid[N]; // Массив потомства
                 for (int i = 0; i < ind.Length;i += 2)
                 {
                     int s1 = random.Next(1, 32 / 2); // 1 точка для кроссинговера
                     int s2 = random.Next(32 / 2, 32); // 2 точка для кроссинговера
+
                     //int s1 = 5;
                     //int s2 = 23;
 
 
                     children[i] = new Indidvid(random); // Создаём детей
                     children[i+1] = new Indidvid(random);
-                    children[i].Reproduction(ind[i].array, ind[i + 1].array, s1, s2, true);
-                    children[i+1].Reproduction(ind[i].array, ind[i + 1].array, s1, s2, false);
-                    ind[i] = children[i];
-                    ind[i+1] = children[i+1];
+
+                    do
+                    {
+                        x1 = Selection(roulette_fields);
+                        x2 = Selection(roulette_fields);
+                    } while (x1 < x2); // Выбираем им родителей
+
+                    children[i].Reproduction(ind[x1].array, ind[x2].array, s1, s2, true);
+                    children[i+1].Reproduction(ind[x1].array, ind[x2].array, s1, s2, false);
+
                 }
                 for(int i = 0; i < children.Length; i++)
                 {
-                    Print(ind[i].array, ind[i].value); // Печатем детей
+                    Print(children[i].array, children[i].value); // Печатем детей
                 }
 
             }
 
+            public int Selection(double[] roulette_fields) // Выбераем родителей
+            {
+                
+                int x = 0;
+                double m = random.NextDouble(); // Крутим колесо рулетки)
+                for (int i = 0; i < roulette_fields.Length - 1; i++) // проходим по всем полям значений рулетки
+                {
+                    if (roulette_fields[i] < m & m < roulette_fields[i+1]) // Ищем
+                    {
+                        x = i;
+                        //break;
+                    }
+                }
+                return x;
+            }
+
+        }
+
+        static double Sum(Indidvid[] ind) 
+        {
+            double sum = 0;
+            for (int i = 0; i < ind.Length * 0.6; i++) // Сумма фитнесс-функций 60% наиболееприспособленных осыбей
+            {
+                sum += ind[i].value;
+            }
+            return sum;
         }
 
         static void Print(int[] array, double value) // Метод вывода новых генов в консоль
