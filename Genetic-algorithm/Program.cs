@@ -17,18 +17,20 @@ namespace Genetic_algorithm
 
         class Indidvid
         {
-            public Indidvid() // Конструктор единичной осыби популяции
+            public Indidvid(Random random) // Конструктор единичной осыби популяции
             {
                 array = new int[32];
+                this.random = random;
                 
             }
 
             public int[] array;
             public double value;
+            public Random random;
 
             public void Create_Individ() // Заносим в массив занчения
             {
-                Random random = new Random();
+                
                 for (int i = 0; i< array.Length; i++)
                 {
                     array[i] = random.Next(2);
@@ -74,7 +76,6 @@ namespace Genetic_algorithm
 
             public void Mutation(int[] array) // Осуществление мутации
             {
-                Random random = new Random();
                 int Pm = random.Next(100);
                 if (Pm < 8)
                 {
@@ -101,13 +102,14 @@ namespace Genetic_algorithm
             public Indidvid[] ind;
             public int x; // Номер популяции
             public int N; // Количесвто осыбей
+            public Random random = new Random(); // Генератор случайных чисел
 
             public Indidvid[] Create_Population(int N) // Создаём популяция
             {
                 Indidvid[] ind = new Indidvid[N]; // Массив из объектов типа особь, по факту наша популяция
                 for (int i = 0; i < N; i++)
                 {
-                    ind[i] = new Indidvid();
+                    ind[i] = new Indidvid(random);
                     ind[i].Create_Individ();
                     Print(ind[i].array, ind[i].value);
                 }
@@ -116,7 +118,6 @@ namespace Genetic_algorithm
 
             public void Copulation(Indidvid[] ind) // Метод совокупления
             {
-                Random random = new Random();
                 Indidvid[] children = new Indidvid[ind.Length]; // Массив из объектов типа ребёнок
                 for (int i = 0; i < ind.Length;i += 2)
                 {
@@ -126,8 +127,8 @@ namespace Genetic_algorithm
                     //int s2 = 23;
 
 
-                    children[i] = new Indidvid(); // Создаём детей
-                    children[i+1] = new Indidvid();
+                    children[i] = new Indidvid(random); // Создаём детей
+                    children[i+1] = new Indidvid(random);
                     children[i].Reproduction(ind[i].array, ind[i + 1].array, s1, s2, true);
                     children[i+1].Reproduction(ind[i].array, ind[i + 1].array, s1, s2, false);
                 }
