@@ -128,7 +128,7 @@ namespace Genetic_algorithm
 
                 for (int i = 0; i < roulette_fields.Length - 1; i++) // Заполняем массив
                 {
-                    roulette_fields[i + 1] = roulette_fields[i] + (1 / ind[i].value )/ sum_value;
+                    roulette_fields[i + 1] = roulette_fields[i] + (1 / Math.Abs(ind[i].value) )/ sum_value;
                 }
                 int x1;
                 int x2;
@@ -195,9 +195,9 @@ namespace Genetic_algorithm
 
                 for (int i = 0; i < N; i++)
                 {
-                    if(min_value < ind[i].value)
+                    if(min_value < Math.Abs(ind[i].value))
                     {
-                        min_value = ind[i].value;
+                        min_value = Math.Abs(ind[i].value);
                     }
                 }
                 return min_value;
@@ -210,7 +210,7 @@ namespace Genetic_algorithm
             double sum = 0;
             for (int i = 0; i < ind.Length * 0.6; i++) // Сумма фитнесс-функций 60% наиболееприспособленных осыбей
             {
-                sum += 1 / ind[i].value;
+                sum += 1 / Math.Abs(ind[i].value);
             }
             return sum;
         }  // Обратная сумма
@@ -227,27 +227,38 @@ namespace Genetic_algorithm
         static double Value_Finding(int[] array)
         {
             double X = 0;
-            for (int i = array.Length / 16; i > 0; i--)
+            for (int i = 3; i > 0; i--)
             {
-                X += array[i] * Math.Pow(2,-(i - array.Length / 16));
+                X += array[i] * Math.Pow(2,-(i - 3));
             }
             double X_point = 0;
-            for (int i = array.Length / 2; i > array.Length / 16; i--)
+            for (int i = 16; i > 3; i--)
             {
-                X_point += array[i] * Math.Pow(2, -(i - array.Length / 2));
+                X_point += array[i] * Math.Pow(2, -(i - 16));
             }
-            X += X_point/Math.Pow(10, X_point.ToString().Length);
-            double Y = 0;
-            for (int i = array.Length / 16 * 9; i > array.Length / 2; i--)
+            X += X_point / Math.Pow(10, X_point.ToString().Length);
+            if (array[0] == 0)
             {
-                Y += array[i] * Math.Pow(2, -(i - array.Length / 16 * 9));
+                X = -X;
+            }
+            
+            
+            double Y = 0;
+            for (int i = 20; i > 17; i--)
+            {
+                Y += array[i] * Math.Pow(2, -(i - 24));
             }
             double Y_point = 0;
-            for (int i = array.Length - 1; i > array.Length / 16 * 9; i--)
+            for (int i = 31; i > 20; i--)
             {
-                Y_point += array[i] * Math.Pow(2, -(i - array.Length + 1));
+                Y_point += array[i] * Math.Pow(2, -(i - 31));
             }
             Y += Y_point / Math.Pow(10, Y_point.ToString().Length);
+            if (array[17] == 0)
+            {
+                Y = -Y;
+            }
+
             double value = Math.Pow(1.5 - X + X * Y, 2) + Math.Pow(2.25 - X + X * Y * Y, 2) + Math.Pow(2.625 - X + X * Y * Y * Y, 2);
             return value;
         } //Расчёт ценности гена
